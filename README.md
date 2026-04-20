@@ -1,189 +1,71 @@
-﻿# Bookmarks Admin Studio
+﻿# Bookmarks Admin Panel
 
-Static **copy-paste admin interface** for [`bookmarks.love`](https://bookmarks.love/).
+Minimal, fast, clean **copy-paste admin panel** for [`bookmarks.love`](https://bookmarks.love/).
 
-This repository is independent from the production source repository [`bookmarks-cih/Bookmarks`](https://github.com/bookmarks-cih/Bookmarks). It does **not** push changes to the main site and it does **not** sync with Neocities.
+Live site: <https://bookmarks-cih.github.io/>
 
-The final workflow is always manual and safe:
+This tool never edits the production site directly. It only generates source-compatible blocks that you manually copy and paste into the correct file.
 
-1. manage data in the admin UI;
-2. validate and preview locally;
-3. generate source-compatible code blocks;
-4. copy the final block;
-5. paste it into the real source file yourself.
+## What you can generate
 
-## Live site
+### Site / resource link
 
-<https://bookmarks-cih.github.io/>
+For:
 
-## What it manages
+- `data/bookmarks-data.js` / `window.BOOKMARKS_DATA`
+- `docs.html` / `const docsData`
+- `files.html` / `const docsData`
+- `jobs.html` / `const docsData`
+- any same-format custom page
 
-### 1. Bookmarks
-
-Compatible with `data/bookmarks-data.js`:
+Format:
 
 ```js
-window.BOOKMARKS_DATA = [
-  { name: "Site", link: "https://example.com", desc: "Description.", cat: "Category" },
-];
+{ name: "Site", link: "https://example.com", desc: "Description.", cat: "Category" },
 ```
 
-Paste generated bookmark blocks inside:
+### Creator card
 
-```js
-window.BOOKMARKS_DATA = [
-  // paste generated block here
-];
-```
+For `creators.html` / `const CREATORS_DATA`.
 
-### 2. Creator cards
+### Creator profile header
 
-Compatible with the `CREATORS_DATA` array in `creators.html`:
+For pages based on `creators/profiletemplate.html`.
 
-```js
-const CREATORS_DATA = [
-  {
-    id: 1,
-    name: "Creator",
-    handle: "@creator",
-    initials: "CR",
-    avatar: "/creators/img/avatar.jpg",
-    verified: true,
-    category: "Security",
-    bio: "Short creator bio.",
-    links: 10,
-    url: "/creators/creator.html",
-    socials: {
-      x: "#",
-      youtube: "#",
-      github: "#",
-      website: "#",
-      spotify: "#",
-      apple_podcast: "#"
-    }
-  },
-];
-```
+### Creator profile resource
 
-### 3. Creator profile resources
+For profile `collectionData` sections.
 
-Generates profile-page blocks compatible with pages based on:
+### Hub tile
 
-```text
-creators/profiletemplate.html
-```
+For `hub.html` / `const featuredData`.
 
-Recommended workflow:
+### News / update block
 
-1. duplicate `creators/profiletemplate.html`;
-2. rename it, for example `creators/newcreator.html`;
-3. paste the generated profile section;
-4. paste the generated `collectionData` block;
-5. test before publishing.
+A clean standalone HTML section for `news.html` content.
 
-## Safety model
+## Workflow
 
-This tool is deliberately non-destructive.
+1. Select the block type.
+2. Fill only the visible fields/selectors.
+3. Click **Add to drafts**.
+4. Repeat for anything else you want to add.
+5. Copy the generated output.
+6. Paste it manually into the matching source file.
 
-- No GitHub token is stored.
-- No GitHub API write is performed.
-- No automatic commit is created in the main project.
-- No Neocities deployment is triggered.
-- Draft data is stored in browser `localStorage`.
-- Workspace backups can be exported/imported as JSON.
-- The final action is always **copy-paste**.
+## Safety
 
-## Features
+- No GitHub token.
+- No GitHub write API.
+- No Neocities sync.
+- No production modification.
+- Drafts are stored locally in browser `localStorage`.
+- You can export/import the workspace as JSON.
 
-- English UI.
-- Fast live code generation.
-- Local autosave.
-- JSON workspace export/import.
-- Bookmark category grouping and sorting.
-- Creator card editor.
-- Creator profile section/resource builder.
-- Import from pasted JavaScript snippets.
-- Duplicate URL warnings.
-- Missing field and URL-shape validation.
-- Local copy history.
-- Snippet download.
-
-## Suggested production workflow
-
-In the main `bookmarks-cih/Bookmarks` repository:
-
-```bash
-git checkout -b add-curated-data
-```
-
-Then use the Admin Studio:
-
-1. enter or import data;
-2. fix warnings;
-3. choose the output mode;
-4. click **Copy final block**;
-5. paste into the correct source file;
-6. preview/test the site;
-7. commit only if everything is correct.
-
-Example commit:
-
-```bash
-git add data/bookmarks-data.js creators.html creators/newcreator.html
-git commit -m "Add curated bookmarks and creator resources"
-```
-
-To undo, remove the pasted block or revert the commit.
-
-## Local development
-
-This is a plain static site. No build step is required.
-
-Files:
+## Files
 
 ```text
 index.html
 styles.css
 app.js
 ```
-
-Open `index.html` directly or serve the folder with any static server.
-
-## Page and category selection modes
-
-The studio can now manage bookmark drafts by both **page** and **category**.
-
-Available pages in the UI:
-
-- Home / main bookmarks
-- Docs
-- Files
-- Jobs
-- News
-- Creator resources
-
-The page selector controls where new bookmarks are added. The category selector controls the default category for new bookmarks. This still does not edit the production site directly: it only changes the local admin workspace and the generated copy-paste output.
-
-### Bookmark output scopes
-
-The **Output scope** selector controls what appears in the generated bookmark block:
-
-- **Selected page + category**: only entries matching the active page and category.
-- **Selected page, all categories**: all entries for the active page, grouped by category.
-- **Selected category, all pages**: the active category across every page, grouped by page.
-- **Everything, grouped by page**: all bookmark drafts, grouped by page then category.
-
-This makes it possible to prepare additions for one specific page without touching unrelated generated blocks.
-
-### Counters
-
-The dashboard shows:
-
-- total bookmarks;
-- total categories;
-- pages with data;
-- number of entries in the currently selected scope;
-- creators;
-- creator profile resources.
-
-The selection panel also displays live chips for every page and category. Clicking a chip switches the active selection.
