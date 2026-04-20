@@ -69,3 +69,22 @@ index.html
 styles.css
 app.js
 ```
+
+## Extra generators added
+
+The panel now also supports:
+
+- **News changelog post**: matches `news.html` Project Changelog `.glass-card` blocks.
+- **News source card**: matches `news.html` Curated News Directory cards inside `.news-grid`.
+- **Generic page section**: reusable section/card block for `about.html`, `privacy.html`, `terms.html`, `join.html`, `edit.html`, `news.html`, `hub.html`, or any custom page.
+- **Navigation / menu item**: small hamburger/header menu item block.
+
+## Compact UI
+
+The UI uses a denser layout, roughly a 20% visual zoom-out effect:
+
+- smaller controls;
+- reduced spacing;
+- wider workspace;
+- larger visible code area;
+- faster one-screen editing.
