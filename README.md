@@ -104,3 +104,24 @@ Examples:
 - `Page section / About`
 
 The generated code defaults to the **active tab only**, so unrelated snippets are no longer mixed together. Use **All tabs grouped separately** only when you explicitly want a full export with separators.
+
+## macOS-style generated-code tabs
+
+The generated-code panel now has its own visual macOS-like tab bar.
+
+When drafts target different paste destinations, tabs appear directly above the code editor, for example:
+
+```text
+[ Jobs / Remote 1 ] [ News changelog 1 ] [ Hub tiles 1 ]
+```
+
+Clicking a tab switches the code editor to that destination only. The Copy button copies only the active tab unless you explicitly choose the global export option.
+
+Animations added:
+
+- animated active tab underline;
+- smooth code transition when switching tabs;
+- panel entrance animation;
+- draft item entrance animation;
+- copy success pop animation;
+- hover micro-interactions.

@@ -8,14 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20260421-drafttabs">
+  <link rel="stylesheet" href="./styles.css?v=20260421-codetabs">
 </head>
 <body>
   <main class="app">
     <header class="site-header">
       <a class="logo" href="https://bookmarks.love/" target="_blank" rel="noreferrer">
         <span class="logo-icon">B</span>
-        <span><strong>Bookmarks</strong><small>Admin Panel</small></span>
+        <span class="logo-copy"><div class="logo-text">Book<span>marks</span></div><small>Admin Panel</small></span>
       </a>
       <div class="header-actions">
         <button id="copyAllTop" class="primary">Copy output</button>
@@ -76,13 +76,15 @@
             <button id="downloadOutput">Download</button>
           </div>
         </div>
-        <pre id="code" class="code"></pre>
+        <div id="codeTabs" class="code-tabs"></div><pre id="code" class="code"></pre>
       </section>
     </section>
   </main>
-  <script src="./app.js?v=20260421-drafttabs"></script>
+  <script src="./app.js?v=20260421-codetabs"></script>
 </body>
 </html>
+
+
 
 
 
