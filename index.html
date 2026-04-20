@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20260420-compact">
+  <link rel="stylesheet" href="./styles.css?v=20260421-drafttabs">
 </head>
 <body>
   <main class="app">
@@ -62,7 +62,7 @@
             <button id="clearDrafts" class="danger">Clear drafts</button>
           </div>
         </div>
-        <div id="drafts" class="drafts"></div>
+        <div id="groupTabs" class="browser-tabs"></div><div id="drafts" class="drafts"></div>
       </section>
 
       <section class="panel output-panel">
@@ -70,8 +70,7 @@
           <div><h2>Generated code</h2><p id="targetText">Select a block type.</p></div>
           <div class="mini-actions">
             <select id="outputScope">
-              <option value="current">Current block type only</option>
-              <option value="all">All drafts grouped by target</option>
+              <option value="active">Active tab only</option><option value="all">All tabs grouped separately</option>
             </select>
             <button id="copyOutput" class="primary">Copy</button>
             <button id="downloadOutput">Download</button>
@@ -81,9 +80,10 @@
       </section>
     </section>
   </main>
-  <script src="./app.js?v=20260420-allpages2"></script>
+  <script src="./app.js?v=20260421-drafttabs"></script>
 </body>
 </html>
+
 
 
 
