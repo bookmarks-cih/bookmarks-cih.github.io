@@ -125,3 +125,13 @@ Animations added:
 - draft item entrance animation;
 - copy success pop animation;
 - hover micro-interactions.
+
+## Dynamic tab behavior fix
+
+The generated-code tabs are now fully dynamic:
+
+- no destination tabs appear when there are no drafts;
+- tabs are created only from real drafts;
+- stale/demo local data is isolated with a new storage version;
+- clicking a tab updates drafts and generated code immediately;
+- the `All tabs` tab only appears when more than one paste destination exists.
