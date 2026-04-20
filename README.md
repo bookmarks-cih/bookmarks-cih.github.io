@@ -148,3 +148,42 @@ app.js
 ```
 
 Open `index.html` directly or serve the folder with any static server.
+
+## Page and category selection modes
+
+The studio can now manage bookmark drafts by both **page** and **category**.
+
+Available pages in the UI:
+
+- Home / main bookmarks
+- Docs
+- Files
+- Jobs
+- News
+- Creator resources
+
+The page selector controls where new bookmarks are added. The category selector controls the default category for new bookmarks. This still does not edit the production site directly: it only changes the local admin workspace and the generated copy-paste output.
+
+### Bookmark output scopes
+
+The **Output scope** selector controls what appears in the generated bookmark block:
+
+- **Selected page + category**: only entries matching the active page and category.
+- **Selected page, all categories**: all entries for the active page, grouped by category.
+- **Selected category, all pages**: the active category across every page, grouped by page.
+- **Everything, grouped by page**: all bookmark drafts, grouped by page then category.
+
+This makes it possible to prepare additions for one specific page without touching unrelated generated blocks.
+
+### Counters
+
+The dashboard shows:
+
+- total bookmarks;
+- total categories;
+- pages with data;
+- number of entries in the currently selected scope;
+- creators;
+- creator profile resources.
+
+The selection panel also displays live chips for every page and category. Clicking a chip switches the active selection.
