@@ -1,0 +1,235 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bookmarks Admin Generator</title>
+  <meta name="description" content="Générateur de blocs Bookmarks pour bookmarks-data.js et creators.html." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand:#0c84f3; --brand-dark:#0066d9; --brand-light:#53b5ff; --brand-soft:rgba(12,132,243,.14); --brand-glow:rgba(83,181,255,.24);
+      --bg:#07111f; --bg-2:#0b1628; --surface:rgba(255,255,255,.055); --surface-2:rgba(255,255,255,.085); --border:rgba(255,255,255,.13);
+      --text:#f7fbff; --text-soft:rgba(247,251,255,.78); --text-dim:rgba(247,251,255,.52); --danger:#ff6b8b; --ok:#4ade80; --warn:#facc15;
+      --shadow:0 24px 80px rgba(0,0,0,.36); --radius:24px; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;color:var(--text);background:radial-gradient(circle at 16% 12%,rgba(83,181,255,.2),transparent 28%),radial-gradient(circle at 84% 8%,rgba(12,132,243,.22),transparent 30%),linear-gradient(135deg,var(--bg),#020712 62%,var(--bg-2));overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+    a{color:inherit}.wrap{width:min(1480px,calc(100% - 32px));margin:0 auto;padding:28px 0 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px}.logo{display:flex;align-items:center;gap:12px}.logo-mark{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--brand-light),var(--brand-dark));display:grid;place-items:center;box-shadow:0 14px 40px var(--brand-glow);font-weight:900}.logo h1{font-family:"Space Grotesk",sans-serif;margin:0;font-size:clamp(1.2rem,2vw,1.9rem);letter-spacing:-.04em}.logo p{margin:2px 0 0;color:var(--text-dim);font-size:.82rem}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);padding:9px 12px;border-radius:999px;color:var(--text-soft);font-size:.82rem;backdrop-filter:blur(14px)}.pill b{color:var(--brand-light)}
+    .hero{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.035));box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.hero:after{content:"#love";position:absolute;right:28px;bottom:-24px;font-family:"Space Grotesk";font-size:90px;font-weight:800;color:rgba(83,181,255,.055);transform:rotate(-8deg)}.hero h2{font-family:"Space Grotesk";font-size:clamp(2rem,5vw,4rem);line-height:.98;letter-spacing:-.07em;margin:0 0 12px}.hero h2 span{color:var(--brand-light)}.hero p{max-width:780px;margin:0;color:var(--text-soft);line-height:1.65}.hero-grid{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:end}.checks{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.check{padding:8px 11px;border:1px solid rgba(83,181,255,.22);background:rgba(83,181,255,.07);border-radius:12px;color:var(--text-soft);font-size:.82rem}
+    .tabs{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.tab{border:1px solid var(--border);background:var(--surface);color:var(--text-soft);padding:11px 14px;border-radius:14px;cursor:pointer;font-weight:700;transition:.2s}.tab:hover,.tab.active{border-color:rgba(83,181,255,.5);background:var(--brand-soft);color:var(--text)}
+    .app{display:grid;grid-template-columns:minmax(360px,520px) minmax(420px,1fr);gap:18px}.panel{border:1px solid var(--border);border-radius:22px;background:rgba(7,17,31,.72);box-shadow:0 18px 60px rgba(0,0,0,.22);backdrop-filter:blur(18px);overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.035)}.panel-title{font-family:"Space Grotesk";font-weight:700;letter-spacing:-.03em}.panel-sub{font-size:.78rem;color:var(--text-dim);margin-top:2px}.panel-body{padding:18px}.form{display:grid;gap:14px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:7px}.field label{font-size:.78rem;font-weight:800;color:var(--text-soft);text-transform:uppercase;letter-spacing:.08em}.field small{color:var(--text-dim);font-size:.75rem;line-height:1.4}input,textarea,select{width:100%;border:1px solid var(--border);background:rgba(255,255,255,.055);color:var(--text);border-radius:14px;padding:12px 13px;font:inherit;outline:none;transition:.18s}textarea{min-height:96px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:var(--brand-light);box-shadow:0 0 0 4px var(--brand-soft)}select option{background:#07111f}.switch{display:flex;align-items:center;gap:10px;color:var(--text-soft);font-weight:700}.switch input{width:auto}.actions{display:flex;flex-wrap:wrap;gap:10px}.btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:14px;padding:11px 13px;font-weight:800;cursor:pointer;transition:.18s}.btn.primary{border-color:transparent;background:linear-gradient(135deg,var(--brand-light),var(--brand-dark));box-shadow:0 12px 35px rgba(12,132,243,.22)}.btn:hover{transform:translateY(-1px);border-color:rgba(83,181,255,.5)}.btn.danger{color:#ffdbe4;border-color:rgba(255,107,139,.35);background:rgba(255,107,139,.08)}
+    .codebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.status{font-size:.8rem;color:var(--text-dim)}.status.ok{color:var(--ok)}.codebox{position:relative}.code{margin:0;min-height:620px;max-height:72vh;overflow:auto;padding:18px;background:#020813;color:#d8ecff;border-radius:0 0 22px 22px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre;tab-size:2}.code .muted{color:#7b8ba3}.preview{display:grid;gap:12px;margin-top:8px}.site-card,.creator-card{border:1px solid var(--border);background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.03));border-radius:18px;padding:14px}.site-card b,.creator-card b{color:var(--brand-light)}.site-card p,.creator-card p{color:var(--text-soft);margin:8px 0 0;line-height:1.45}.tag{display:inline-flex;border:1px solid rgba(83,181,255,.25);background:rgba(83,181,255,.08);color:var(--brand-light);border-radius:999px;padding:4px 8px;font-size:.72rem;font-weight:800}.creator-top{display:flex;gap:12px;align-items:center}.avatar{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--brand-light),var(--brand-dark));display:grid;place-items:center;font-weight:900;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.hidden{display:none!important}.items{display:grid;gap:10px}.item-editor{border:1px solid var(--border);border-radius:16px;padding:12px;background:rgba(255,255,255,.035)}.item-editor .row{grid-template-columns:1fr 1fr}.divider{height:1px;background:var(--border);margin:4px 0}.hint{border:1px solid rgba(250,204,21,.22);background:rgba(250,204,21,.08);color:#fff4b0;border-radius:16px;padding:12px;line-height:1.5;font-size:.88rem}.footer{margin-top:22px;color:var(--text-dim);font-size:.82rem;line-height:1.6}.kbd{font-family:var(--mono);background:rgba(255,255,255,.09);border:1px solid var(--border);padding:2px 6px;border-radius:7px;color:var(--text-soft)}
+    @media(max-width:980px){.app{grid-template-columns:1fr}.code{min-height:420px}.hero-grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="logo"><div class="logo-mark">B</div><div><h1>Bookmarks Admin</h1><p>Curated Intelligence Hub · Generator</p></div></div>
+      <div class="pill">Mode sécurisé : <b>copier-coller uniquement</b></div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <h2>Génère les blocs <span>sans casser le site</span>.</h2>
+          <p>Remplis les champs à gauche, regarde le code compatible se construire à droite, puis copie le résultat dans le dépôt Bookmarks. Aucun push automatique, aucune liaison Neocities : tu gardes le contrôle modification par modification.</p>
+          <div class="checks"><span class="check">Format bookmarks-data.js</span><span class="check">Format creators.html</span><span class="check">Profil créateur</span><span class="check">Échappement JS automatique</span></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Modules">
+      <button class="tab active" data-tab="sites">Sites par catégories</button>
+      <button class="tab" data-tab="creator">Créateur / listing</button>
+      <button class="tab" data-tab="profile">Profil créateur</button>
+      <button class="tab" data-tab="guide">Guide collage</button>
+    </nav>
+
+    <section class="app">
+      <aside class="panel">
+        <div class="panel-head"><div><div class="panel-title" id="formTitle">Sites par catégories</div><div class="panel-sub" id="formSub">Objets pour data/bookmarks-data.js</div></div></div>
+        <div class="panel-body">
+          <form class="form" id="sitesForm" data-pane="sites">
+            <div class="field"><label>Catégorie</label><input id="siteCat" value="Search" list="categoryList"><small>Doit correspondre exactement au nom souhaité dans <span class="kbd">cat</span>.</small></div>
+            <datalist id="categoryList"></datalist>
+            <label class="switch"><input type="checkbox" id="includeCategoryComment" checked> Inclure le commentaire de catégorie</label>
+            <div id="siteItems" class="items"></div>
+            <div class="actions"><button type="button" class="btn primary" id="addSite">+ Ajouter un site</button><button type="button" class="btn" id="clearSites">Vider</button></div>
+          </form>
+
+          <form class="form hidden" id="creatorForm" data-pane="creator">
+            <div class="row"><div class="field"><label>ID</label><input id="crId" type="number" value="5" min="1"></div><div class="field"><label>Nom</label><input id="crName" value="New Creator"></div></div>
+            <div class="row"><div class="field"><label>Handle</label><input id="crHandle" value="@newcreator"></div><div class="field"><label>Initiales</label><input id="crInitials" value="NC" maxlength="4"></div></div>
+            <div class="field"><label>Avatar</label><input id="crAvatar" value="/creators/img/newcreator.jpg"></div>
+            <div class="row"><div class="field"><label>Catégorie</label><input id="crCategory" value="Security"></div><div class="field"><label>Nombre de liens</label><input id="crLinks" type="number" value="10" min="0"></div></div>
+            <div class="field"><label>URL profil</label><input id="crUrl" value="/creators/newcreator.html"></div>
+            <label class="switch"><input type="checkbox" id="crVerified" checked> Créateur vérifié</label>
+            <div class="field"><label>Bio courte</label><textarea id="crBio">Short description of the creator and why their resources are useful.</textarea></div>
+            <div class="divider"></div>
+            <div class="row"><div class="field"><label>X / Twitter</label><input id="crX" value="#"></div><div class="field"><label>YouTube</label><input id="crYoutube" value="#"></div></div>
+            <div class="row"><div class="field"><label>GitHub</label><input id="crGithub" value="#"></div><div class="field"><label>Website</label><input id="crWebsite" value="#"></div></div>
+            <div class="row"><div class="field"><label>Spotify</label><input id="crSpotify" value="#"></div><div class="field"><label>Apple Podcast</label><input id="crApple" value="#"></div></div>
+          </form>
+
+          <form class="form hidden" id="profileForm" data-pane="profile">
+            <div class="hint">Pour une nouvelle page : duplique <span class="kbd">creators/profiletemplate.html</span>, puis colle les blocs générés au bon endroit.</div>
+            <div class="row"><div class="field"><label>Nom profil</label><input id="pfName" value="New Creator"></div><div class="field"><label>Handle</label><input id="pfHandle" value="@newcreator"></div></div>
+            <div class="row"><div class="field"><label>Initiales</label><input id="pfInitials" value="NC" maxlength="4"></div><div class="field"><label>Avatar</label><input id="pfAvatar" value="/creators/img/newcreator.jpg"></div></div>
+            <div class="row"><div class="field"><label>X</label><input id="pfX" value="#"></div><div class="field"><label>YouTube</label><input id="pfYoutube" value="#"></div></div>
+            <div class="row"><div class="field"><label>GitHub</label><input id="pfGithub" value="#"></div><div class="field"><label>Website</label><input id="pfWebsite" value="#"></div></div>
+            <div class="divider"></div>
+            <div class="field"><label>Sections de ressources</label><small>Ajoute des sections comme dans <span class="kbd">collectionData</span>. Chaque item garde le format { name, desc, img, url, tag }.</small></div>
+            <div id="sections" class="items"></div>
+            <div class="actions"><button type="button" class="btn primary" id="addSection">+ Section</button><button type="button" class="btn" id="addResource">+ Ressource dans dernière section</button></div>
+          </form>
+
+          <div class="form hidden" id="guidePane" data-pane="guide">
+            <div class="hint"><b>Workflow safe :</b><br>1) Copie le bloc généré.<br>2) Fais une sauvegarde ou un commit avant collage.<br>3) Colle dans le tableau JS correspondant.<br>4) Recharge le site localement/GitHub Pages pour vérifier.<br>5) Pour annuler : revert le commit ou supprime uniquement le bloc ajouté.</div>
+            <div class="site-card"><b>Sites</b><p>Fichier cible : <span class="kbd">data/bookmarks-data.js</span>, dans <span class="kbd">window.BOOKMARKS_DATA = [ ... ]</span>.</p></div>
+            <div class="site-card"><b>Créateur listing</b><p>Fichier cible : <span class="kbd">creators.html</span>, dans <span class="kbd">const CREATORS_DATA = [ ... ]</span>.</p></div>
+            <div class="site-card"><b>Profil créateur</b><p>Fichier cible : une nouvelle page basée sur <span class="kbd">creators/profiletemplate.html</span>. Remplacer la zone Profile Section et <span class="kbd">collectionData</span>.</p></div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-title">Code généré en live</div><div class="panel-sub">Copie uniquement ce bloc dans le code source</div></div><div class="codebar"><span class="status" id="status">Prêt</span><button class="btn primary" id="copyBtn">Copier</button><button class="btn" id="downloadBtn">Télécharger</button></div></div>
+        <pre class="code" id="codeOut"></pre>
+      </section>
+    </section>
+
+    <section class="panel" style="margin-top:18px"><div class="panel-head"><div><div class="panel-title">Preview</div><div class="panel-sub">Rendu approximatif de ce que tu ajoutes</div></div></div><div class="panel-body"><div class="preview" id="preview"></div></div></section>
+    <footer class="footer">Sources analysées : <a href="https://bookmarks.love/">bookmarks.love</a>, <a href="https://bookmarks.love/creators">/creators</a>, dépôt <a href="https://github.com/bookmarks-cih/Bookmarks">bookmarks-cih/Bookmarks</a>. Outil autonome compatible GitHub Pages.</footer>
+  </main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const knownCategories = ["Search","Esotericism","onion mirror","Privacy","Security","OSINT","AI","Dev","Hacking","Crypto","News","Tools","Learning","Docs","Files","Jobs"];
+  $("categoryList").innerHTML = knownCategories.map(c => `<option value="${escapeHtml(c)}"></option>`).join("");
+
+  const state = { tab:"sites", siteCount:0, sectionCount:0 };
+  const codeOut = $("codeOut"), preview = $("preview"), status = $("status");
+
+  function escapeJs(value){ return String(value ?? "").replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\r?\n/g," ").trim(); }
+  function escapeHtml(value){ return String(value ?? "").replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+  function jsStr(v){ return `"${escapeJs(v)}"`; }
+  function normalizeHash(v){ const s = String(v ?? "").trim(); return s || "#"; }
+  function fileSlug(name){ return String(name || "creator").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "creator"; }
+
+  function addSiteItem(data={}){
+    state.siteCount++;
+    const el = document.createElement("div");
+    el.className = "item-editor site-item";
+    el.innerHTML = `
+      <div class="row"><div class="field"><label>Nom du site</label><input class="sName" value="${escapeHtml(data.name || "Example Site")}"></div><div class="field"><label>URL</label><input class="sLink" value="${escapeHtml(data.link || "https://example.com")}"></div></div>
+      <div class="field"><label>Description</label><textarea class="sDesc">${escapeHtml(data.desc || "Short useful description.")}</textarea></div>
+      <div class="actions"><button type="button" class="btn danger remove">Supprimer cette ligne</button></div>`;
+    el.querySelector(".remove").onclick = () => { el.remove(); render(); };
+    el.querySelectorAll("input,textarea").forEach(x => x.addEventListener("input", render));
+    $("siteItems").appendChild(el); render();
+  }
+
+  function siteObjects(){
+    return [...document.querySelectorAll(".site-item")].map(el => ({
+      name: el.querySelector(".sName").value,
+      link: el.querySelector(".sLink").value,
+      desc: el.querySelector(".sDesc").value,
+      cat: $("siteCat").value
+    })).filter(x => x.name || x.link || x.desc);
+  }
+
+  function renderSites(){
+    const cat = $("siteCat").value.trim() || "Uncategorized";
+    const rows = siteObjects();
+    const comment = $("includeCategoryComment").checked ? `  /* -------------------- ${cat.toUpperCase()} -------------------- */\n` : "";
+    const body = rows.map(x => `  { name: ${jsStr(x.name)}, link: ${jsStr(x.link)}, desc: ${jsStr(x.desc)}, cat: ${jsStr(x.cat)} },`).join("\n");
+    preview.innerHTML = rows.length ? rows.map(x => `<div class="site-card"><span class="tag">${escapeHtml(x.cat)}</span><p><b>${escapeHtml(x.name)}</b><br>${escapeHtml(x.desc)}<br><small>${escapeHtml(x.link)}</small></p></div>`).join("") : `<div class="hint">Ajoute au moins un site.</div>`;
+    return comment + body;
+  }
+
+  function renderCreator(){
+    const socials = [
+      ["x", $("crX").value], ["youtube", $("crYoutube").value], ["github", $("crGithub").value], ["spotify", $("crSpotify").value], ["apple_podcast", $("crApple").value], ["website", $("crWebsite").value]
+    ];
+    const socialsCode = socials.filter(([,v]) => normalizeHash(v) !== "#").concat(socials.filter(([,v]) => normalizeHash(v) === "#")).map(([k,v]) => `          ${k}: ${jsStr(normalizeHash(v))}`).join(",\n");
+    const code = `      {\n        id: ${Number($("crId").value) || 1},\n        name: ${jsStr($("crName").value)},\n        handle: ${jsStr($("crHandle").value)},\n        initials: ${jsStr($("crInitials").value)},\n        avatar: ${jsStr($("crAvatar").value)},\n        verified: ${$("crVerified").checked ? "true" : "false"},\n        category: ${jsStr($("crCategory").value)},\n        bio: ${jsStr($("crBio").value)},\n        links: ${Number($("crLinks").value) || 0},\n        url: ${jsStr($("crUrl").value)},\n        socials: {\n${socialsCode}\n        }\n      },`;
+    const avatar = $("crAvatar").value ? `<img src="${escapeHtml($("crAvatar").value)}" alt="">` : escapeHtml($("crInitials").value);
+    preview.innerHTML = `<div class="creator-card"><div class="creator-top"><div class="avatar">${avatar}</div><div><b>${escapeHtml($("crName").value)}</b><br><span class="tag">${escapeHtml($("crCategory").value)}</span> <span style="color:var(--text-dim)">${escapeHtml($("crHandle").value)}</span></div></div><p>${escapeHtml($("crBio").value)}</p></div>`;
+    return code;
+  }
+
+  function addSection(data={}){
+    state.sectionCount++;
+    const sec = document.createElement("div"); sec.className="item-editor section-editor";
+    sec.innerHTML = `<div class="field"><label>Titre section</label><input class="secTitle" value="${escapeHtml(data.title || "Getting Started")}"></div><div class="items secItems"></div><div class="actions"><button type="button" class="btn addInSection">+ Ressource</button><button type="button" class="btn danger removeSec">Supprimer section</button></div>`;
+    sec.querySelector(".removeSec").onclick = () => { sec.remove(); render(); };
+    sec.querySelector(".addInSection").onclick = () => addResource(sec);
+    sec.querySelector(".secTitle").addEventListener("input", render);
+    $("sections").appendChild(sec);
+    (data.items || [{name:"Resource name",desc:"Useful resource description.",img:"",url:"https://example.com",tag:"Guide"}]).forEach(item => addResource(sec, item));
+    render();
+  }
+  function addResource(sec = [...document.querySelectorAll(".section-editor")].at(-1), data={}){
+    if(!sec){ addSection(); return; }
+    const item = document.createElement("div"); item.className="item-editor resource-editor";
+    item.innerHTML = `<div class="row"><div class="field"><label>Nom</label><input class="rName" value="${escapeHtml(data.name || "Resource name")}"></div><div class="field"><label>Tag</label><input class="rTag" value="${escapeHtml(data.tag || "Guide")}"></div></div><div class="field"><label>Description</label><textarea class="rDesc">${escapeHtml(data.desc || "Useful resource description.")}</textarea></div><div class="row"><div class="field"><label>Image</label><input class="rImg" value="${escapeHtml(data.img || "")}"></div><div class="field"><label>URL</label><input class="rUrl" value="${escapeHtml(data.url || "#")}"></div></div><div class="actions"><button type="button" class="btn danger removeRes">Supprimer ressource</button></div>`;
+    item.querySelector(".removeRes").onclick = () => { item.remove(); render(); };
+    item.querySelectorAll("input,textarea").forEach(x => x.addEventListener("input", render));
+    sec.querySelector(".secItems").appendChild(item); render();
+  }
+
+  function renderProfile(){
+    const socialLinks = [["X",$("pfX").value],["YouTube",$("pfYoutube").value],["GitHub",$("pfGithub").value],["Website",$("pfWebsite").value]].filter(([,v]) => normalizeHash(v) !== "#");
+    const iconStub = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M8 7h9v9"/></svg>`;
+    const socialHtml = socialLinks.map(([name,url]) => `        <a href="${escapeHtml(url)}" class="social-icon" title="${escapeHtml(name)}" target="_blank" rel="noopener noreferrer">${iconStub}</a>`).join("\n");
+    const profileBlock = `    <!-- Profile Section -->\n    <div class="profile-section">\n      <div class="avatar-wrapper">\n        <div class="avatar-ring">\n          <div class="avatar-img">\n            <img src="${escapeHtml($("pfAvatar").value)}" alt="${escapeHtml($("pfName").value)}">\n          </div>\n        </div>\n        <div class="avatar-badge">✓</div>\n      </div>\n      <h1 class="profile-name">${escapeHtml($("pfName").value)}</h1>\n      <span class="profile-handle">${escapeHtml($("pfHandle").value)}</span>\n      <div class="social-links">\n${socialHtml || "        <!-- Add social links here -->"}\n      </div>\n    </div>`;
+    const sections = [...document.querySelectorAll(".section-editor")].map(sec => ({
+      title: sec.querySelector(".secTitle").value,
+      items: [...sec.querySelectorAll(".resource-editor")].map(item => ({name:item.querySelector(".rName").value, desc:item.querySelector(".rDesc").value, img:item.querySelector(".rImg").value, url:item.querySelector(".rUrl").value, tag:item.querySelector(".rTag").value}))
+    }));
+    const collection = `    const collectionData = [\n${sections.map(sec => `      {\n        title: ${jsStr(sec.title)},\n        items: [\n${sec.items.map(it => `          { name: ${jsStr(it.name)}, desc: ${jsStr(it.desc)}, img: ${jsStr(it.img)}, url: ${jsStr(it.url)}, tag: ${jsStr(it.tag)} },`).join("\n")}\n        ]\n      },`).join("\n")}\n    ];`;
+    preview.innerHTML = `<div class="creator-card"><div class="creator-top"><div class="avatar">${$("pfAvatar").value ? `<img src="${escapeHtml($("pfAvatar").value)}" alt="">` : escapeHtml($("pfInitials").value)}</div><div><b>${escapeHtml($("pfName").value)}</b><br><span style="color:var(--text-dim)">${escapeHtml($("pfHandle").value)}</span></div></div><p>${sections.length} section(s), ${sections.reduce((n,s)=>n+s.items.length,0)} ressource(s). Fichier conseillé : <span class="kbd">creators/${fileSlug($("pfName").value)}.html</span></p></div>`;
+    return `${profileBlock}\n\n    <!-- Replace DATA / collectionData block -->\n${collection}`;
+  }
+
+  function renderGuide(){
+    preview.innerHTML = `<div class="hint">Sélectionne un onglet de génération pour voir un aperçu.</div>`;
+    return `/* GUIDE SAFE COPY-PASTE\n\nSites:\n  data/bookmarks-data.js -> window.BOOKMARKS_DATA = [ ... ]\n\nCreators listing:\n  creators.html -> const CREATORS_DATA = [ ... ]\n\nCreator profile:\n  duplicate creators/profiletemplate.html -> creators/<slug>.html\n  replace Profile Section and const collectionData = [ ... ]\n\nRecommended safety:\n  git add . && git commit -m "backup before admin generated additions"\n  paste generated block\n  test locally / preview GitHub Pages\n  commit only if OK\n*/`;
+  }
+
+  function render(){
+    let code = state.tab === "sites" ? renderSites() : state.tab === "creator" ? renderCreator() : state.tab === "profile" ? renderProfile() : renderGuide();
+    codeOut.textContent = code;
+    status.textContent = code.trim() ? "Bloc valide à copier" : "Remplis les champs";
+    status.className = "status " + (code.trim() ? "ok" : "");
+  }
+
+  document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active")); btn.classList.add("active"); state.tab = btn.dataset.tab;
+    document.querySelectorAll("[data-pane]").forEach(p => p.classList.toggle("hidden", p.dataset.pane !== state.tab));
+    const titles = {sites:["Sites par catégories","Objets pour data/bookmarks-data.js"], creator:["Créateur / listing","Objet pour const CREATORS_DATA"], profile:["Profil créateur","Blocs pour une page basée sur profiletemplate.html"], guide:["Guide collage","Où coller les blocs générés"]};
+    $("formTitle").textContent = titles[state.tab][0]; $("formSub").textContent = titles[state.tab][1]; render();
+  }));
+
+  document.querySelectorAll("input,textarea,select").forEach(el => el.addEventListener("input", render));
+  $("includeCategoryComment").addEventListener("change", render);
+  $("crVerified").addEventListener("change", render);
+  $("addSite").onclick = () => addSiteItem({name:"New Site",link:"https://",desc:"Description of the resource."});
+  $("clearSites").onclick = () => { $("siteItems").innerHTML=""; render(); };
+  $("addSection").onclick = () => addSection({title:"New Section",items:[]});
+  $("addResource").onclick = () => addResource();
+  $("copyBtn").onclick = async () => { await navigator.clipboard.writeText(codeOut.textContent); status.textContent="Copié !"; status.className="status ok"; setTimeout(render,1200); };
+  $("downloadBtn").onclick = () => { const blob = new Blob([codeOut.textContent], {type:"text/plain;charset=utf-8"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = state.tab === "profile" ? `${fileSlug($("pfName").value)}-blocks.txt` : `${state.tab}-block.txt`; a.click(); URL.revokeObjectURL(a.href); };
+
+  addSiteItem({name:"Example Site",link:"https://example.com",desc:"Short useful description."});
+  addSection({title:"Getting Started",items:[{name:"Example Resource",desc:"A useful starter resource.",img:"",url:"https://example.com",tag:"Guide"}]});
+  render();
+})();
+</script>
+</body>
+</html>
