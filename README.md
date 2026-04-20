@@ -88,3 +88,19 @@ The UI uses a denser layout, roughly a 20% visual zoom-out effect:
 - wider workspace;
 - larger visible code area;
 - faster one-screen editing.
+
+## Draft browser tabs
+
+Drafts are now automatically separated into browser-like paste tabs.
+
+Examples:
+
+- `Docs / Academic`
+- `Jobs / Tech Giants`
+- `Profile resources / creator-name`
+- `Hub tiles`
+- `News changelog`
+- `News sources grid`
+- `Page section / About`
+
+The generated code defaults to the **active tab only**, so unrelated snippets are no longer mixed together. Use **All tabs grouped separately** only when you explicitly want a full export with separators.
