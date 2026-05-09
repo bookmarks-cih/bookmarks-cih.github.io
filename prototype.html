@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bookmarks — Admin v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0f;
+  --bg2: #13141a;
+  --bg3: #1a1b24;
+  --bg4: #22232e;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0f4;
+  --text2: #9b9bad;
+  --text3: #5c5c72;
+  --accent: #7c6af7;
+  --accent2: #a695ff;
+  --accent-bg: rgba(124,106,247,0.12);
+  --green: #3ecf8e;
+  --green-bg: rgba(62,207,142,0.1);
+  --amber: #f5a623;
+  --amber-bg: rgba(245,166,35,0.1);
+  --red: #ff5b5b;
+  --red-bg: rgba(255,91,91,0.1);
+  --radius: 10px;
+  --radius-lg: 16px;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Syne', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;min-height:100vh}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:100}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;gap:2px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.main{padding:28px 32px;overflow-y:auto}
+
+/* ── TOPBAR ── */
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:auto}
+.logo-mark{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:15px;color:#fff;letter-spacing:-0.5px;flex-shrink:0}
+.logo-text{font-family:var(--display);font-weight:700;font-size:15px;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tb-badge{font-size:11px;font-family:var(--mono);background:var(--green-bg);color:var(--green);border:1px solid rgba(62,207,142,0.2);padding:3px 9px;border-radius:20px}
+.tb-btn{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s}
+.tb-btn:hover{opacity:.85}
+.tb-btn.ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.tb-btn.ghost:hover{background:var(--bg3);color:var(--text)}
+
+/* ── SIDEBAR ── */
+.nav-section{padding:6px 14px 2px;font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:10px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-radius:0;transition:all .15s;text-decoration:none;position:relative;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--bg3)}
+.nav-item.active{color:var(--text);background:var(--accent-bg);border-left-color:var(--accent)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-badge{margin-left:auto;font-size:10px;font-family:var(--mono);background:var(--bg4);color:var(--text3);padding:1px 6px;border-radius:20px}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px}
+.page-title{font-family:var(--display);font-size:22px;font-weight:700;color:var(--text)}
+.page-sub{font-size:13px;color:var(--text3);margin-top:3px}
+.actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-title{font-family:var(--display);font-weight:600;font-size:14px;color:var(--text)}
+.card-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.card-body{padding:20px}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.col-span2{grid-column:span 2}
+
+/* ── STAT CARDS ── */
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:6px}
+.stat-val{font-family:var(--display);font-size:26px;font-weight:700;color:var(--text)}
+.stat-label{font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.stat-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:20px}
+.stat-pill.up{background:var(--green-bg);color:var(--green)}
+.stat-pill.down{background:var(--red-bg);color:var(--red)}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{padding:10px 18px;font-size:13px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;font-weight:500}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+
+/* ── FORMS ── */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-family:var(--mono);color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:9px 12px;font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:80px}
+.field select option{background:var(--bg3)}
+.row{display:flex;gap:10px}
+.row .field{flex:1}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid transparent;white-space:nowrap}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{opacity:.85}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:rgba(255,91,91,0.2)}
+.btn-danger:hover{background:rgba(255,91,91,0.2)}
+.btn-green{background:var(--green-bg);color:var(--green);border-color:rgba(62,207,142,0.2)}
+.btn-sm{padding:5px 11px;font-size:12px}
+
+/* ── CODE ── */
+pre.code-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:12px;color:#c9d1d9;overflow-x:auto;white-space:pre;line-height:1.65}
+.code-wrap{position:relative}
+.copy-btn{position:absolute;top:10px;right:10px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:4px 10px;font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .15s}
+.copy-btn:hover{background:var(--bg4);color:var(--text)}
+.copy-btn.copied{color:var(--green);border-color:rgba(62,207,142,0.3)}
+
+/* ── DRAFT ITEM ── */
+.draft-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.draft-type{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.draft-type.job{background:var(--accent-bg);color:var(--accent2)}
+.draft-type.file{background:var(--amber-bg);color:var(--amber)}
+.draft-type.creator{background:var(--green-bg);color:var(--green)}
+.draft-name{font-size:13px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draft-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+
+/* ── CREATOR PREVIEW ── */
+.creator-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.creator-banner{height:80px;background:linear-gradient(135deg,#2d2047,#1a2d47)}
+.creator-avatar-wrap{padding:0 24px;margin-top:-30px;position:relative;z-index:1}
+.creator-avatar{width:60px;height:60px;border-radius:50%;border:3px solid var(--bg2);object-fit:cover;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:20px;color:var(--accent2)}
+.creator-info{padding:12px 24px 20px}
+.creator-category{font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:6px}
+.creator-name{font-family:var(--display);font-weight:700;font-size:20px;color:var(--text)}
+.creator-handle{font-size:13px;color:var(--text3);font-family:var(--mono);margin-bottom:10px}
+.creator-bio{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.creator-links{display:flex;gap:8px;flex-wrap:wrap}
+.creator-link{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);text-decoration:none;font-family:var(--mono)}
+.creator-link:hover{color:var(--text);background:var(--bg4)}
+
+/* ── COLOR SWATCHES ── */
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0}
+.swatch.active{border-color:var(--text);transform:scale(1.15)}
+.color-input-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+
+/* ── OUTPUT TABS ── */
+.out-tabs{display:flex;gap:4px;margin-bottom:12px}
+.out-tab{padding:5px 12px;font-size:12px;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--text2);transition:all .15s}
+.out-tab.active{background:var(--accent-bg);color:var(--accent2);border-color:rgba(124,106,247,0.3)}
+
+/* ── SECTIONS ── */
+.section{display:none}
+.section.active{display:block}
+
+/* ── EMPTY STATE ── */
+.empty{padding:40px;text-align:center;color:var(--text3)}
+.empty svg{width:32px;height:32px;stroke:var(--text3);fill:none;stroke-width:1.5;margin:0 auto 12px;display:block}
+.empty p{font-size:13px}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ── NOTICE ── */
+.notice{background:var(--accent-bg);border:1px solid rgba(124,106,247,0.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--accent2);margin-bottom:16px;font-family:var(--mono)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:10px;font-size:13px;font-family:var(--mono);z-index:9999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ── AVATAR PREVIEW ── */
+.avatar-preview{width:64px;height:64px;border-radius:50%;background:var(--bg4);border:2px solid var(--border2);object-fit:cover;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:22px;color:var(--accent2);overflow:hidden;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="logo" href="https://bookmarks.love" target="_blank">
+    <div class="logo-mark">B</div>
+    <div>
+      <div class="logo-text">Bookmarks</div>
+      <div class="logo-sub">admin v2</div>
+    </div>
+  </a>
+  <span class="tb-badge" id="draftCount">0 drafts</span>
+  <button class="tb-btn ghost" onclick="exportAll()">Export</button>
+  <label class="tb-btn ghost" style="cursor:pointer">Import<input type="file" accept=".json" style="display:none" onchange="importAll(this)"></label>
+  <button class="tb-btn ghost" onclick="resetAll()">Reset</button>
+  <button class="tb-btn" onclick="copyAllCode()">Copy all output</button>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <span class="nav-section">Blocks</span>
+  <a class="nav-item active" onclick="showSection('blocks')" href="#blocks">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Block generator
+    <span class="nav-badge" id="nb-blocks">0</span>
+  </a>
+  <a class="nav-item" onclick="showSection('creator')" href="#creator">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Creator profile
+  </a>
+  <span class="nav-section">Output</span>
+  <a class="nav-item" onclick="showSection('output')" href="#output">
+    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    Generated code
+    <span class="nav-badge" id="nb-output">0</span>
+  </a>
+  <span class="nav-section">Help</span>
+  <a class="nav-item" onclick="showSection('guide')" href="#guide">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Guide
+  </a>
+  <div style="flex:1"></div>
+  <div style="padding:12px 16px;border-top:1px solid var(--border);margin-top:12px">
+    <div style="font-size:11px;font-family:var(--mono);color:var(--text3)">bookmarks.love</div>
+    <div style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:2px">admin panel v2.0</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ═══════════ BLOCKS ═══════════ -->
+<div class="section active" id="sec-blocks">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Block generator</h1>
+      <p class="page-sub">Create job entries, file entries, and other blocks. Copy directly into production files.</p>
+    </div>
+  </div>
+
+  <div class="g2" style="gap:20px;align-items:start">
+
+    <!-- CREATE FORM -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent2)"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <div>
+          <div class="card-title">Create block</div>
+          <div class="card-sub">Choose type then fill fields</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Block type</label>
+          <select id="blockType" onchange="renderFields()">
+            <option value="">— select —</option>
+            <optgroup label="Jobs">
+              <option value="job">Job entry</option>
+            </optgroup>
+            <optgroup label="Files">
+              <option value="file">File entry</option>
+            </optgroup>
+            <optgroup label="Creators">
+              <option value="creator_card">Creator card (index)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div id="targetHelp" class="notice" style="display:none"></div>
+        <div id="dynamicFields"></div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btn-primary" onclick="addDraft()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add to drafts
+          </button>
+          <button class="btn btn-ghost" onclick="clearFields()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DRAFTS -->
+    <div class="card">
+      <div class="card-head" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div>
+            <div class="card-title">Drafts</div>
+            <div class="card-sub">Local until copied</div>
+          </div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="clearDrafts()">Clear all</button>
+      </div>
+      <div class="card-body" style="padding:12px 14px" id="draftList">
+        <div class="empty">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p>No drafts yet. Create a block above.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ CREATOR BUILDER ═══════════ -->
+<div class="section" id="sec-creator">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Creator profile builder</h1>
+      <p class="page-sub">Design a full profile page, preview it live, then export the complete HTML.</p>
+    </div>
+  </div>
+
+  <div class="g2" style="gap:20px;align-items:start">
+
+    <!-- EDITOR -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Identity</div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="field">
+              <label>Full name</label>
+              <input id="c_name" type="text" placeholder="Dr. Chengdiao Fan" oninput="updatePreview()">
+            </div>
+            <div class="field">
+              <label>Handle</label>
+              <input id="c_handle" type="text" placeholder="chengdiaofan" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Category / specialty</label>
+            <input id="c_category" type="text" placeholder="Anthropological Sciences" oninput="updatePreview()">
+          </div>
+          <div class="field">
+            <label>Bio</label>
+            <textarea id="c_bio" rows="4" placeholder="Short description of the creator..." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="field">
+            <label>Photo URL</label>
+            <input id="c_photo" type="url" placeholder="https://..." oninput="updatePreview()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Links</div></div>
+        <div class="card-body">
+          <div class="row">
+            <div class="field"><label>X / Twitter URL</label><input id="c_x" type="url" placeholder="https://x.com/..." oninput="updatePreview()"></div>
+            <div class="field"><label>YouTube URL</label><input id="c_yt" type="url" placeholder="https://youtube.com/..." oninput="updatePreview()"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Website</label><input id="c_web" type="url" placeholder="https://..." oninput="updatePreview()"></div>
+            <div class="field"><label>GitHub</label><input id="c_gh" type="url" placeholder="https://github.com/..." oninput="updatePreview()"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Visual style</div></div>
+        <div class="card-body">
+          <div class="field">
+            <label>Banner / accent color</label>
+            <div class="swatches" id="swatches">
+              <div class="swatch active" style="background:#2d2047" data-color="#2d2047,#1a2d47" onclick="pickSwatch(this)"></div>
+              <div class="swatch" style="background:#1a3a2d" data-color="#1a3a2d,#0d2a1f" onclick="pickSwatch(this)"></div>
+              <div class="swatch" style="background:#3a1a1a" data-color="#3a1a1a,#2d0f0f" onclick="pickSwatch(this)"></div>
+              <div class="swatch" style="background:#1a2a3a" data-color="#1a2a3a,#0d1d2a" onclick="pickSwatch(this)"></div>
+              <div class="swatch" style="background:#2a2a1a" data-color="#2a2a1a,#1d1d0d" onclick="pickSwatch(this)"></div>
+              <div class="swatch" style="background:#2a1a3a" data-color="#2a1a3a,#1d0d2a" onclick="pickSwatch(this)"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Featured video URL (YouTube embed)</label>
+            <input id="c_video" type="url" placeholder="https://www.youtube.com/embed/..." oninput="updatePreview()">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="exportCreatorHTML()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export complete profile HTML
+      </button>
+    </div>
+
+    <!-- PREVIEW -->
+    <div style="position:sticky;top:70px">
+      <div style="font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Live preview</div>
+      <div class="creator-preview" id="creatorPreview">
+        <div class="creator-banner" id="prev-banner" style="background:linear-gradient(135deg,#2d2047,#1a2d47)"></div>
+        <div class="creator-avatar-wrap">
+          <div class="creator-avatar" id="prev-avatar">?</div>
+        </div>
+        <div class="creator-info">
+          <div class="creator-category" id="prev-category">Category</div>
+          <div class="creator-name" id="prev-name">Creator Name</div>
+          <div class="creator-handle" id="prev-handle">@handle</div>
+          <div class="creator-bio" id="prev-bio">Bio will appear here...</div>
+          <div class="creator-links" id="prev-links"></div>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="tab-bar" style="margin-bottom:0">
+          <div class="tab active" onclick="switchCreatorTab('profile',this)">Profile page code</div>
+          <div class="tab" onclick="switchCreatorTab('card',this)">Card snippet</div>
+        </div>
+        <div id="creator-code-wrap" class="code-wrap" style="margin-top:12px">
+          <pre class="code-block" id="creatorCode" style="font-size:11px;max-height:260px;overflow-y:auto"></pre>
+          <button class="copy-btn" onclick="copyCreatorCode()">Copy</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ OUTPUT ═══════════ -->
+<div class="section" id="sec-output">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Generated code</h1>
+      <p class="page-sub">All drafts compiled. Copy and paste into the matching source file.</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="downloadAll()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download .txt
+      </button>
+      <button class="btn btn-primary" onclick="copyAllCode()">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy all
+      </button>
+    </div>
+  </div>
+
+  <div class="out-tabs" id="outputTabBar"></div>
+  <div class="code-wrap">
+    <pre class="code-block" id="outputCode" style="max-height:600px;overflow-y:auto">No drafts yet.</pre>
+    <button class="copy-btn" onclick="copyActiveOutput()">Copy</button>
+  </div>
+</div>
+
+<!-- ═══════════ GUIDE ═══════════ -->
+<div class="section" id="sec-guide">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Admin guide</h1>
+      <p class="page-sub">How to use this panel and how blocks map to production files.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head"><div class="card-title">Workflow</div></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent-bg);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;flex-shrink:0">1</div>
+        <div><div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:2px">Choose a block type</div><div style="font-size:12px;color:var(--text2)">Select Job entry, File entry, or Creator card from the Block generator.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent-bg);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;flex-shrink:0">2</div>
+        <div><div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:2px">Fill in the fields</div><div style="font-size:12px;color:var(--text2)">Each block type has specific fields. Required fields are marked. All data stays local in your browser.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent-bg);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;flex-shrink:0">3</div>
+        <div><div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:2px">Add to drafts</div><div style="font-size:12px;color:var(--text2)">Click Add to drafts. You can queue multiple blocks before generating the final output.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent-bg);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;flex-shrink:0">4</div>
+        <div><div style="font-weight:500;font-size:13px;color:var(--text);margin-bottom:2px">Go to Generated code</div><div style="font-size:12px;color:var(--text2)">Switch to the Output tab. Blocks are grouped by type. Copy each group and paste into the matching source file on GitHub.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="g2" style="gap:12px">
+    <div class="card">
+      <div class="card-head"><div class="card-title">File mappings</div></div>
+      <div class="card-body">
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          <thead><tr style="color:var(--text3)"><td style="padding:4px 0;font-family:var(--mono)">Block type</td><td style="padding:4px 0;font-family:var(--mono)">Target file</td></tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid var(--border)"><td style="padding:6px 0;color:var(--accent2)">job</td><td style="padding:6px 0;color:var(--text2);font-family:var(--mono);font-size:11px">jobs/&lt;category&gt;.html</td></tr>
+            <tr style="border-top:1px solid var(--border)"><td style="padding:6px 0;color:var(--amber)">file</td><td style="padding:6px 0;color:var(--text2);font-family:var(--mono);font-size:11px">files/&lt;category&gt;.html</td></tr>
+            <tr style="border-top:1px solid var(--border)"><td style="padding:6px 0;color:var(--green)">creator_card</td><td style="padding:6px 0;color:var(--text2);font-family:var(--mono);font-size:11px">creators.html</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Tips</div></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:12px;color:var(--text2)">Use <span style="font-family:var(--mono);color:var(--accent2)">Export</span> to save your workspace as JSON before closing the browser.</div>
+        <div style="font-size:12px;color:var(--text2)">The <span style="font-family:var(--mono);color:var(--accent2)">Creator profile builder</span> generates a full standalone HTML page ready to deploy as <span style="font-family:var(--mono);font-size:11px">creators/yourhandle.html</span>.</div>
+        <div style="font-size:12px;color:var(--text2)">All data is stored in <span style="font-family:var(--mono);color:var(--accent2)">localStorage</span>. Nothing is sent to any server.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let drafts = JSON.parse(localStorage.getItem('bm_drafts_v2') || '[]');
+let bannerColor = '#2d2047,#1a2d47';
+let creatorCodeMode = 'profile';
+
+function saveDrafts(){
+  localStorage.setItem('bm_drafts_v2', JSON.stringify(drafts));
+  renderDrafts();
+  updateCounts();
+  renderOutput();
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(id==='output') renderOutput();
+}
+
+/* ══════════════════════════════════════
+   BLOCK FIELDS CONFIG
+══════════════════════════════════════ */
+const BLOCK_CONFIG = {
+  job: {
+    label: 'Job entry',
+    hint: 'Paste generated code into the matching jobs/<category>.html file.',
+    color: 'job',
+    fields: [
+      {id:'j_title', label:'Job title', type:'text', placeholder:'Senior Frontend Engineer', required:true},
+      {id:'j_company', label:'Company', type:'text', placeholder:'Acme Corp', required:true},
+      {id:'j_location', label:'Location', type:'text', placeholder:'Remote / Paris, FR'},
+      {id:'j_url', label:'Apply URL', type:'url', placeholder:'https://...', required:true},
+      {id:'j_category', label:'Category slug', type:'text', placeholder:'engineering', required:true},
+      {id:'j_tags', label:'Tags (comma separated)', type:'text', placeholder:'frontend, react, remote'},
+      {id:'j_desc', label:'Short description', type:'textarea', placeholder:'One or two lines max...'},
+    ]
+  },
+  file: {
+    label: 'File entry',
+    hint: 'Paste generated code into the matching files/<category>.html file.',
+    color: 'file',
+    fields: [
+      {id:'f_title', label:'File / resource title', type:'text', placeholder:'The Security Handbook', required:true},
+      {id:'f_author', label:'Author / source', type:'text', placeholder:'OWASP'},
+      {id:'f_url', label:'Resource URL', type:'url', placeholder:'https://...', required:true},
+      {id:'f_category', label:'Category slug', type:'text', placeholder:'security', required:true},
+      {id:'f_format', label:'Format', type:'select', options:['PDF','Article','Video','Tool','Guide','Dataset','Other']},
+      {id:'f_desc', label:'Description', type:'textarea', placeholder:'What is this resource about?'},
+    ]
+  },
+  creator_card: {
+    label: 'Creator card',
+    hint: 'Paste generated code into creators.html.',
+    color: 'creator',
+    fields: [
+      {id:'cc_name', label:'Full name', type:'text', placeholder:'Dr. Chengdiao Fan', required:true},
+      {id:'cc_handle', label:'Handle (slug)', type:'text', placeholder:'chengdiaofan', required:true},
+      {id:'cc_category', label:'Category', type:'text', placeholder:'Anthropological Sciences', required:true},
+      {id:'cc_photo', label:'Photo URL', type:'url', placeholder:'https://...'},
+      {id:'cc_bio', label:'Short bio', type:'textarea', placeholder:'One sentence summary...'},
+    ]
+  }
+};
+
+function renderFields(){
+  const type = document.getElementById('blockType').value;
+  const cfg = BLOCK_CONFIG[type];
+  const fieldsDiv = document.getElementById('dynamicFields');
+  const helpDiv = document.getElementById('targetHelp');
+
+  if(!cfg){fieldsDiv.innerHTML='';helpDiv.style.display='none';return;}
+
+  helpDiv.textContent = cfg.hint;
+  helpDiv.style.display = 'block';
+
+  let html = '';
+  cfg.fields.forEach(f=>{
+    html += `<div class="field"><label>${f.label}${f.required?' <span style="color:var(--accent2)">*</span>':''}</label>`;
+    if(f.type==='textarea'){
+      html += `<textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea>`;
+    } else if(f.type==='select'){
+      html += `<select id="${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
+    } else {
+      html += `<input type="${f.type}" id="${f.id}" placeholder="${f.placeholder||''}">`;
+    }
+    html += '</div>';
+  });
+  fieldsDiv.innerHTML = html;
+}
+
+function clearFields(){
+  document.getElementById('blockType').value='';
+  document.getElementById('dynamicFields').innerHTML='';
+  document.getElementById('targetHelp').style.display='none';
+}
+
+function addDraft(){
+  const type = document.getElementById('blockType').value;
+  const cfg = BLOCK_CONFIG[type];
+  if(!cfg){toast('Select a block type first.');return;}
+
+  const data = {type};
+  let missing = [];
+  cfg.fields.forEach(f=>{
+    const el = document.getElementById(f.id);
+    if(!el) return;
+    data[f.id] = el.value.trim();
+    if(f.required && !data[f.id]) missing.push(f.label);
+  });
+
+  if(missing.length){toast('Required: '+missing.join(', '));return;}
+
+  data._label = data[cfg.fields[0].id] || type;
+  data._color = cfg.color;
+  drafts.push(data);
+  saveDrafts();
+  clearFields();
+  toast('Added to drafts ✓');
+}
+
+/* ══════════════════════════════════════
+   DRAFTS RENDER
+══════════════════════════════════════ */
+function renderDrafts(){
+  const container = document.getElementById('draftList');
+  if(!drafts.length){
+    container.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No drafts yet.</p></div>`;
+    return;
+  }
+  container.innerHTML = drafts.map((d,i)=>`
+    <div class="draft-item">
+      <span class="draft-type ${d._color}">${d.type}</span>
+      <span class="draft-name">${escHtml(d._label)}</span>
+      <span class="draft-meta">#${i+1}</span>
+      <button class="btn btn-ghost btn-sm" onclick="removeDraft(${i})" style="padding:3px 8px">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function removeDraft(i){
+  drafts.splice(i,1);
+  saveDrafts();
+  toast('Draft removed');
+}
+
+function clearDrafts(){
+  if(!confirm('Clear all drafts?')) return;
+  drafts=[];
+  saveDrafts();
+  toast('Drafts cleared');
+}
+
+/* ══════════════════════════════════════
+   CODE GENERATION
+══════════════════════════════════════ */
+function genCode(d){
+  if(d.type==='job'){
+    const tags = (d.j_tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+    return `<div class="job-entry">
+  <div class="job-header">
+    <div class="job-title"><a href="${escAttr(d.j_url)}" target="_blank" rel="noreferrer">${escHtml(d.j_title)}</a></div>
+    <div class="job-company">${escHtml(d.j_company)}</div>
+  </div>
+  <div class="job-meta">
+    <span class="job-location">${escHtml(d.j_location||'')}</span>
+    ${tags.map(t=>`<span class="tag">${escHtml(t)}</span>`).join('')}
+  </div>${d.j_desc?`\n  <p class="job-desc">${escHtml(d.j_desc)}</p>`:''}
+</div>`;
+  }
+  if(d.type==='file'){
+    return `<div class="file-entry">
+  <div class="file-header">
+    <span class="file-format">${escHtml(d.f_format||'')}</span>
+    <a href="${escAttr(d.f_url)}" target="_blank" rel="noreferrer" class="file-title">${escHtml(d.f_title)}</a>
+  </div>
+  ${d.f_author?`<div class="file-author">${escHtml(d.f_author)}</div>`:''}
+  ${d.f_desc?`<p class="file-desc">${escHtml(d.f_desc)}</p>`:''}
+</div>`;
+  }
+  if(d.type==='creator_card'){
+    return `<a href="/creators/${escAttr(d.cc_handle)}.html" class="creator-card">
+  <img src="${escAttr(d.cc_photo||'')}" alt="${escHtml(d.cc_name)}" class="creator-thumb">
+  <div class="creator-card-info">
+    <span class="creator-card-cat">${escHtml(d.cc_category)}</span>
+    <strong>${escHtml(d.cc_name)}</strong>
+    <span class="creator-card-handle">@${escHtml(d.cc_handle)}</span>
+    ${d.cc_bio?`<p>${escHtml(d.cc_bio)}</p>`:''}
+  </div>
+</a>`;
+  }
+  return '<!-- unknown block type -->';
+}
+
+/* ══════════════════════════════════════
+   OUTPUT
+══════════════════════════════════════ */
+const TYPE_LABELS = {job:'Jobs',file:'Files',creator_card:'Creators'};
+let activeOutputType = null;
+
+function renderOutput(){
+  const tabBar = document.getElementById('outputTabBar');
+  const codeEl = document.getElementById('outputCode');
+  const badge = document.getElementById('nb-output');
+
+  badge.textContent = drafts.length;
+
+  if(!drafts.length){
+    tabBar.innerHTML='';
+    codeEl.textContent='No drafts yet.';
+    return;
+  }
+
+  const groups = {};
+  drafts.forEach(d=>{
+    if(!groups[d.type]) groups[d.type]=[];
+    groups[d.type].push(d);
+  });
+
+  const types = Object.keys(groups);
+  if(!activeOutputType || !groups[activeOutputType]) activeOutputType = types[0];
+
+  tabBar.innerHTML = types.map(t=>`<div class="out-tab${t===activeOutputType?' active':''}" onclick="switchOutputTab('${t}')">${TYPE_LABELS[t]||t} (${groups[t].length})</div>`).join('');
+
+  const blocks = groups[activeOutputType];
+  codeEl.textContent = blocks.map(d=>genCode(d)).join('\n\n');
+}
+
+function switchOutputTab(type){
+  activeOutputType = type;
+  renderOutput();
+}
+
+function copyActiveOutput(){
+  const text = document.getElementById('outputCode').textContent;
+  copyText(text,'Code copied ✓');
+}
+
+function copyAllCode(){
+  if(!drafts.length){toast('No drafts.');return;}
+  const all = drafts.map(d=>genCode(d)).join('\n\n');
+  copyText(all,'All code copied ✓');
+}
+
+function downloadAll(){
+  if(!drafts.length){toast('No drafts.');return;}
+  const text = drafts.map(d=>`<!-- ${d.type} -->\n`+genCode(d)).join('\n\n');
+  const a = document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(text);
+  a.download='bookmarks-blocks.txt';
+  a.click();
+  toast('Downloaded ✓');
+}
+
+/* ══════════════════════════════════════
+   CREATOR PREVIEW
+══════════════════════════════════════ */
+function val(id){return (document.getElementById(id)||{}).value||'';}
+
+function updatePreview(){
+  const name = val('c_name')||'Creator Name';
+  const handle = val('c_handle')||'handle';
+  const category = val('c_category')||'Category';
+  const bio = val('c_bio')||'Bio will appear here...';
+  const photo = val('c_photo');
+  const [c1,c2] = bannerColor.split(',');
+
+  document.getElementById('prev-name').textContent = name;
+  document.getElementById('prev-handle').textContent = '@'+handle;
+  document.getElementById('prev-category').textContent = category;
+  document.getElementById('prev-bio').textContent = bio;
+  document.getElementById('prev-banner').style.background = `linear-gradient(135deg,${c1},${c2})`;
+
+  const av = document.getElementById('prev-avatar');
+  if(photo){
+    av.innerHTML = `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  } else {
+    av.innerHTML = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+  }
+
+  const links = document.getElementById('prev-links');
+  links.innerHTML = '';
+  const addLink = (url, label) => {
+    if(!url) return;
+    links.innerHTML += `<span class="creator-link">${escHtml(label)}</span>`;
+  };
+  addLink(val('c_x'),'X');
+  addLink(val('c_yt'),'YouTube');
+  addLink(val('c_web'),'Website');
+  addLink(val('c_gh'),'GitHub');
+
+  updateCreatorCode();
+}
+
+function pickSwatch(el){
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  bannerColor = el.dataset.color;
+  updatePreview();
+}
+
+function switchCreatorTab(mode, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  creatorCodeMode = mode;
+  updateCreatorCode();
+}
+
+function updateCreatorCode(){
+  const codeEl = document.getElementById('creatorCode');
+  if(creatorCodeMode==='card'){
+    codeEl.textContent = genCreatorCardCode();
+  } else {
+    codeEl.textContent = genCreatorPageCode();
+  }
+}
+
+function genCreatorCardCode(){
+  const name = val('c_name')||'Creator Name';
+  const handle = val('c_handle')||'handle';
+  const category = val('c_category')||'Category';
+  const photo = val('c_photo');
+  const bio = val('c_bio');
+  return `<a href="/creators/${escAttr(handle)}.html" class="creator-card">
+  <img src="${escAttr(photo)}" alt="${escHtml(name)}" class="creator-thumb">
+  <div class="creator-card-info">
+    <span class="creator-card-cat">${escHtml(category)}</span>
+    <strong>${escHtml(name)}</strong>
+    <span class="creator-card-handle">@${escHtml(handle)}</span>${bio?`\n    <p>${escHtml(bio)}</p>`:''}
+  </div>
+</a>`;
+}
+
+function genCreatorPageCode(){
+  const name = val('c_name')||'Creator Name';
+  const handle = val('c_handle')||'handle';
+  const category = val('c_category')||'Category';
+  const photo = val('c_photo');
+  const bio = val('c_bio');
+  const x = val('c_x'), yt = val('c_yt'), web = val('c_web'), gh = val('c_gh');
+  const video = val('c_video');
+  const [c1,c2] = bannerColor.split(',');
+  const links = [
+    x?`  <a href="${x}" title="X" target="_blank" rel="noreferrer">${x}</a>`:'',
+    yt?`  <a href="${yt}" title="YouTube" target="_blank" rel="noreferrer">${yt}</a>`:'',
+    web?`  <a href="${web}" title="Website" target="_blank" rel="noreferrer">${web}</a>`:'',
+    gh?`  <a href="${gh}" title="GitHub" target="_blank" rel="noreferrer">${gh}</a>`:''
+  ].filter(Boolean).join('\n');
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Collection — ${escHtml(name)}</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a href="/creators.html" title="Back to Creators">Back</a>
+<a href="/hub.html" title="Go to Hub">Home</a>
+
+<img src="${escAttr(photo)}" alt="${escHtml(name)}" style="border-radius:50%;width:120px;height:120px;object-fit:cover">
+
+${escHtml(category)}
+
+<h1>${escHtml(name)}</h1>
+<p>@${escHtml(handle)}</p>
+
+<p>${escHtml(bio)}</p>
+
+${links}${video?`\n\n<div class="featured-video">
+  <iframe src="${escAttr(video)}" allowfullscreen></iframe>
+</div>`:''}
+
+<footer>Curated with care by <a href="https://bookmarks.love">bookmarks.love</a></footer>
+</body>
+</html>`;
+}
+
+function copyCreatorCode(){
+  copyText(document.getElementById('creatorCode').textContent,'Code copied ✓');
+}
+
+function exportCreatorHTML(){
+  const code = genCreatorPageCode();
+  const handle = val('c_handle')||'creator';
+  const a = document.createElement('a');
+  a.href='data:text/html;charset=utf-8,'+encodeURIComponent(code);
+  a.download=handle+'.html';
+  a.click();
+  toast('Exported '+handle+'.html ✓');
+}
+
+/* ══════════════════════════════════════
+   WORKSPACE EXPORT / IMPORT
+══════════════════════════════════════ */
+function exportAll(){
+  const ws = {drafts, version:2, ts:Date.now()};
+  const a = document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(ws,null,2));
+  a.download='bookmarks-workspace.json';
+  a.click();
+  toast('Workspace exported ✓');
+}
+
+function importAll(input){
+  const file = input.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = e=>{
+    try{
+      const ws = JSON.parse(e.target.result);
+      if(ws.drafts) drafts=ws.drafts;
+      saveDrafts();
+      toast('Workspace imported ✓');
+    }catch{toast('Invalid JSON file');}
+  };
+  r.readAsText(file);
+  input.value='';
+}
+
+function resetAll(){
+  if(!confirm('Reset everything?')) return;
+  drafts=[];
+  saveDrafts();
+  toast('Workspace reset');
+}
+
+/* ══════════════════════════════════════
+   COUNTS
+══════════════════════════════════════ */
+function updateCounts(){
+  document.getElementById('draftCount').textContent = drafts.length+' draft'+(drafts.length!==1?'s':'');
+  document.getElementById('nb-blocks').textContent = drafts.length;
+}
+
+/* ══════════════════════════════════════
+   UTILS
+══════════════════════════════════════ */
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s){return escHtml(s);}
+
+function copyText(text, msg){
+  navigator.clipboard.writeText(text).then(()=>toast(msg)).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast(msg);
+  });
+}
+
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+renderDrafts();
+updateCounts();
+updatePreview();
+</script>
+</body>
+</html>
